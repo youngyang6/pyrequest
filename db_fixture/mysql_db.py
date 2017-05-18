@@ -3,9 +3,10 @@ import os
 import configparser as cparser
 
 #===========Reading db_config.ini setting===================
-base_dir = str(os.path.dirname(os.path.dirname(__file__)))
+base_dir = str(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 base_dir = base_dir.replace('\\','/')
 file_path = base_dir + "/db_config.ini"
+print (file_path)
 
 cf = cparser.ConfigParser()
 
@@ -24,7 +25,7 @@ class DB:
             self.connection = pymysql.connect(host=host,
                                             user=user,
                                             password=password,
-                                            port=port,
+                                            port=int(port),
                                             db=db,
                                             charset='utf8mb4',
                                             cursorclass=pymysql.cursors.DictCursor)
@@ -45,7 +46,7 @@ class DB:
             table_data[key] = "'"+str(table_data[key])+"'"
         key = ','.join(table_data.keys())
         value = ','.join(table_data.values())
-        real_sql = "INSERT INTO "+ table_name +" (" + key + ") VALUES (" + values + ")"
+        real_sql = "INSERT INTO "+ table_name +" (" + key + ") VALUES (" + value + ")"
         print (real_sql)
 
         with self.connection.cursor() as cursor:
@@ -61,12 +62,10 @@ if __name__ == '__main__':
 
     db = DB()
     table_name = "sign_event"
-    data = {'id':1,'name':'苹果8','`limit`':2000,'status':1,
-            'address':'济南奥体中心','start_time':'2017-06-30 18:30:00'}
+    data = {'id':1,'name':'苹果8','`limit`':2000,'status':1,'address':'济南奥体中心','start_time':'2017-06-30 18:30:00'}
 
-    table_name = "sign_guest"
-    data2 = {'realname':'billy','phone':18612345678,'email':'186186@example,com',
-            'sign':0,'event_id':1}
+    #table_name = "sign_guest"
+    #data2 = {'realname':'billy','phone':18612345678,'email':'186186@example,com','sign':0,'event_id':1}
 
     db.clear(table_name)
     db.insert(table_name,data)
